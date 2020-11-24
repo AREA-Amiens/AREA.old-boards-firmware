@@ -57,7 +57,10 @@ Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_flash_ex.c \
 Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_exti.c \
 Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim.c \
 Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim_ex.c \
-Core/Src/system_stm32f0xx.c
+Core/Src/system_stm32f0xx.c \
+Core/Src/syscalls.c \
+Core/Src/sysmem.c
+
 
 # ASM sources
 ASM_SOURCES =  \
@@ -118,7 +121,6 @@ C_INCLUDES =  \
 -IDrivers/STM32F0xx_HAL_Driver/Inc \
 -IDrivers/STM32F0xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32F0xx/Include \
--IDrivers/CMSIS/Include
 -IDrivers/CMSIS/Include
 
 

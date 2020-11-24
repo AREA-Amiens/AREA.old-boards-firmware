@@ -1,0 +1,1419 @@
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 1
+
+
+   1              		.cpu cortex-m0
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 1
+   9              		.eabi_attribute 34, 0
+  10              		.eabi_attribute 18, 4
+  11              		.file	"main.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.SystemClock_Config,"ax",%progbits
+  16              		.align	1
+  17              		.global	SystemClock_Config
+  18              		.arch armv6s-m
+  19              		.syntax unified
+  20              		.code	16
+  21              		.thumb_func
+  22              		.fpu softvfp
+  24              	SystemClock_Config:
+  25              	.LFB41:
+  26              		.file 1 "Core/Src/main.c"
+   1:Core/Src/main.c **** /* USER CODE BEGIN Header */
+   2:Core/Src/main.c **** /**
+   3:Core/Src/main.c ****  ******************************************************************************
+   4:Core/Src/main.c ****  * @file           : main.c
+   5:Core/Src/main.c ****  * @brief          : Main program body
+   6:Core/Src/main.c ****  ******************************************************************************
+   7:Core/Src/main.c ****  * @attention
+   8:Core/Src/main.c ****  *
+   9:Core/Src/main.c ****  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  10:Core/Src/main.c ****  * All rights reserved.</center></h2>
+  11:Core/Src/main.c ****  *
+  12:Core/Src/main.c ****  * This software component is licensed by ST under BSD 3-Clause license,
+  13:Core/Src/main.c ****  * the "License"; You may not use this file except in compliance with the
+  14:Core/Src/main.c ****  * License. You may obtain a copy of the License at:
+  15:Core/Src/main.c ****  *                        opensource.org/licenses/BSD-3-Clause
+  16:Core/Src/main.c ****  *
+  17:Core/Src/main.c ****  ******************************************************************************
+  18:Core/Src/main.c ****  */
+  19:Core/Src/main.c **** /* USER CODE END Header */
+  20:Core/Src/main.c **** /* Includes ------------------------------------------------------------------*/
+  21:Core/Src/main.c **** #include "main.h"
+  22:Core/Src/main.c **** #include "can.h"
+  23:Core/Src/main.c **** #include "gpio.h"
+  24:Core/Src/main.c **** 
+  25:Core/Src/main.c **** /* Private includes ----------------------------------------------------------*/
+  26:Core/Src/main.c **** /* USER CODE BEGIN Includes */
+  27:Core/Src/main.c **** 
+  28:Core/Src/main.c **** /* USER CODE END Includes */
+  29:Core/Src/main.c **** 
+  30:Core/Src/main.c **** /* Private typedef -----------------------------------------------------------*/
+  31:Core/Src/main.c **** /* USER CODE BEGIN PTD */
+  32:Core/Src/main.c **** 
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 2
+
+
+  33:Core/Src/main.c **** /* USER CODE END PTD */
+  34:Core/Src/main.c **** 
+  35:Core/Src/main.c **** /* Private define ------------------------------------------------------------*/
+  36:Core/Src/main.c **** /* USER CODE BEGIN PD */
+  37:Core/Src/main.c **** /* USER CODE END PD */
+  38:Core/Src/main.c **** 
+  39:Core/Src/main.c **** /* Private macro -------------------------------------------------------------*/
+  40:Core/Src/main.c **** /* USER CODE BEGIN PM */
+  41:Core/Src/main.c **** 
+  42:Core/Src/main.c **** /* USER CODE END PM */
+  43:Core/Src/main.c **** 
+  44:Core/Src/main.c **** /* Private variables ---------------------------------------------------------*/
+  45:Core/Src/main.c **** 
+  46:Core/Src/main.c **** /* USER CODE BEGIN PV */
+  47:Core/Src/main.c **** CAN_TxHeaderTypeDef Txheader;
+  48:Core/Src/main.c **** CAN_RxHeaderTypeDef Rxheader;
+  49:Core/Src/main.c **** uint32_t Txmailbox;
+  50:Core/Src/main.c **** uint8_t Rxmsg[8];
+  51:Core/Src/main.c **** uint8_t Txmsg[8];
+  52:Core/Src/main.c **** uint8_t msg[8];
+  53:Core/Src/main.c **** CAN_FilterTypeDef filter;
+  54:Core/Src/main.c **** /* USER CODE END PV */
+  55:Core/Src/main.c **** 
+  56:Core/Src/main.c **** /* Private function prototypes -----------------------------------------------*/
+  57:Core/Src/main.c **** void SystemClock_Config(void);
+  58:Core/Src/main.c **** /* USER CODE BEGIN PFP */
+  59:Core/Src/main.c **** void TogglePump(uint16_t pin,uint16_t state);
+  60:Core/Src/main.c **** void ToggleValve(uint16_t pin,uint16_t state);
+  61:Core/Src/main.c **** void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan);
+  62:Core/Src/main.c **** void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan);
+  63:Core/Src/main.c **** /* USER CODE END PFP */
+  64:Core/Src/main.c **** 
+  65:Core/Src/main.c **** /* Private user code ---------------------------------------------------------*/
+  66:Core/Src/main.c **** /* USER CODE BEGIN 0 */
+  67:Core/Src/main.c **** 
+  68:Core/Src/main.c **** /* USER CODE END 0 */
+  69:Core/Src/main.c **** 
+  70:Core/Src/main.c **** /**
+  71:Core/Src/main.c ****   * @brief  The application entry point.
+  72:Core/Src/main.c ****   * @retval int
+  73:Core/Src/main.c ****   */
+  74:Core/Src/main.c **** int main(void)
+  75:Core/Src/main.c **** {
+  76:Core/Src/main.c ****   /* USER CODE BEGIN 1 */
+  77:Core/Src/main.c **** 
+  78:Core/Src/main.c ****   /* USER CODE END 1 */
+  79:Core/Src/main.c **** 
+  80:Core/Src/main.c ****   /* MCU Configuration--------------------------------------------------------*/
+  81:Core/Src/main.c **** 
+  82:Core/Src/main.c ****   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  83:Core/Src/main.c ****   HAL_Init();
+  84:Core/Src/main.c **** 
+  85:Core/Src/main.c ****   /* USER CODE BEGIN Init */
+  86:Core/Src/main.c **** 
+  87:Core/Src/main.c ****   /* USER CODE END Init */
+  88:Core/Src/main.c **** 
+  89:Core/Src/main.c ****   /* Configure the system clock */
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 3
+
+
+  90:Core/Src/main.c ****   SystemClock_Config();
+  91:Core/Src/main.c **** 
+  92:Core/Src/main.c ****   /* USER CODE BEGIN SysInit */
+  93:Core/Src/main.c **** 
+  94:Core/Src/main.c ****   /* USER CODE END SysInit */
+  95:Core/Src/main.c **** 
+  96:Core/Src/main.c ****   /* Initialize all configured peripherals */
+  97:Core/Src/main.c ****   MX_GPIO_Init();
+  98:Core/Src/main.c ****   MX_CAN_Init();
+  99:Core/Src/main.c ****   /* USER CODE BEGIN 2 */
+ 100:Core/Src/main.c **** 
+ 101:Core/Src/main.c ****   /* USER CODE END 2 */
+ 102:Core/Src/main.c **** 
+ 103:Core/Src/main.c ****   /* Infinite loop */
+ 104:Core/Src/main.c ****   /* USER CODE BEGIN WHILE */
+ 105:Core/Src/main.c **** 	while (1)
+ 106:Core/Src/main.c **** 	{
+ 107:Core/Src/main.c **** 		/*TogglePump('0', '1');
+ 108:Core/Src/main.c **** 		HAL_Delay(100);
+ 109:Core/Src/main.c **** 		TogglePump('0', '0');
+ 110:Core/Src/main.c **** 		HAL_Delay(100);
+ 111:Core/Src/main.c **** 		ToggleValve('0', '1');
+ 112:Core/Src/main.c **** 		HAL_Delay(100);
+ 113:Core/Src/main.c **** 		ToggleValve('0', '0');
+ 114:Core/Src/main.c **** 		HAL_Delay(100);
+ 115:Core/Src/main.c **** 
+ 116:Core/Src/main.c **** 
+ 117:Core/Src/main.c **** 
+ 118:Core/Src/main.c **** 		TogglePump('1', '1');
+ 119:Core/Src/main.c **** 		HAL_Delay(100);
+ 120:Core/Src/main.c **** 		TogglePump('1', '0');
+ 121:Core/Src/main.c **** 		HAL_Delay(100);
+ 122:Core/Src/main.c **** 		ToggleValve('1', '1');
+ 123:Core/Src/main.c **** 		HAL_Delay(100);
+ 124:Core/Src/main.c **** 		ToggleValve('1', '0');
+ 125:Core/Src/main.c **** 		HAL_Delay(100);
+ 126:Core/Src/main.c **** 
+ 127:Core/Src/main.c **** 
+ 128:Core/Src/main.c **** 
+ 129:Core/Src/main.c **** 		TogglePump('2', '1');
+ 130:Core/Src/main.c **** 		HAL_Delay(100);
+ 131:Core/Src/main.c **** 		TogglePump('2', '0');
+ 132:Core/Src/main.c **** 		HAL_Delay(100);
+ 133:Core/Src/main.c **** 		ToggleValve('2', '1');
+ 134:Core/Src/main.c **** 		HAL_Delay(100);
+ 135:Core/Src/main.c **** 		ToggleValve('2', '0');
+ 136:Core/Src/main.c **** 		HAL_Delay(100);
+ 137:Core/Src/main.c **** 
+ 138:Core/Src/main.c **** 
+ 139:Core/Src/main.c **** 
+ 140:Core/Src/main.c **** 
+ 141:Core/Src/main.c **** 		TogglePump('3', '1');
+ 142:Core/Src/main.c **** 		HAL_Delay(100);
+ 143:Core/Src/main.c **** 		TogglePump('3', '0');
+ 144:Core/Src/main.c **** 		HAL_Delay(100);
+ 145:Core/Src/main.c **** 		ToggleValve('3', '1');
+ 146:Core/Src/main.c **** 		HAL_Delay(100);
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 4
+
+
+ 147:Core/Src/main.c **** 		ToggleValve('3', '0');
+ 148:Core/Src/main.c **** 		HAL_Delay(100);
+ 149:Core/Src/main.c **** 
+ 150:Core/Src/main.c **** 
+ 151:Core/Src/main.c **** 
+ 152:Core/Src/main.c **** 
+ 153:Core/Src/main.c **** 		TogglePump('4', '1');
+ 154:Core/Src/main.c **** 		HAL_Delay(100);
+ 155:Core/Src/main.c **** 		TogglePump('4', '0');
+ 156:Core/Src/main.c **** 		HAL_Delay(100);
+ 157:Core/Src/main.c **** 		ToggleValve('4', '1');
+ 158:Core/Src/main.c **** 		HAL_Delay(100);
+ 159:Core/Src/main.c **** 		ToggleValve('4', '0');
+ 160:Core/Src/main.c **** 		HAL_Delay(100);*/
+ 161:Core/Src/main.c **** 
+ 162:Core/Src/main.c **** 		if(HAL_CAN_GetRxFifoFillLevel(&hcan,CAN_RX_FIFO0))
+ 163:Core/Src/main.c **** 		{
+ 164:Core/Src/main.c **** 			HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0,&Rxheader, Rxmsg);
+ 165:Core/Src/main.c **** 			uint8_t msg[8];
+ 166:Core/Src/main.c **** 			msg[0]=Rxmsg[0];
+ 167:Core/Src/main.c **** 			msg[1]=Rxmsg[1];
+ 168:Core/Src/main.c **** 			msg[2]=Rxmsg[2];
+ 169:Core/Src/main.c **** 			msg[3]=Rxmsg[3];
+ 170:Core/Src/main.c **** 			msg[4]=Rxmsg[4];
+ 171:Core/Src/main.c **** 			msg[5]=Rxmsg[5];
+ 172:Core/Src/main.c **** 			msg[6]=Rxmsg[6];
+ 173:Core/Src/main.c **** 			msg[7]=Rxmsg[7];
+ 174:Core/Src/main.c **** 			if(msg[0]=='P'&&msg[1]=='b')
+ 175:Core/Src/main.c **** 				TogglePump(msg[2],msg[3]);
+ 176:Core/Src/main.c **** 			if(msg[0]=='V'&&msg[1]=='b')
+ 177:Core/Src/main.c **** 				ToggleValve(msg[2], msg[3]);
+ 178:Core/Src/main.c **** 		}
+ 179:Core/Src/main.c **** 		if(HAL_CAN_GetRxFifoFillLevel(&hcan,CAN_RX_FIFO1))
+ 180:Core/Src/main.c **** 		{
+ 181:Core/Src/main.c **** 			HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO1,&Rxheader, Rxmsg);
+ 182:Core/Src/main.c **** 			uint8_t msg[8];
+ 183:Core/Src/main.c **** 			msg[0]=Rxmsg[0];
+ 184:Core/Src/main.c **** 			msg[1]=Rxmsg[1];
+ 185:Core/Src/main.c **** 			msg[2]=Rxmsg[2];
+ 186:Core/Src/main.c **** 			msg[3]=Rxmsg[3];
+ 187:Core/Src/main.c **** 			msg[4]=Rxmsg[4];
+ 188:Core/Src/main.c **** 			msg[5]=Rxmsg[5];
+ 189:Core/Src/main.c **** 			msg[6]=Rxmsg[6];
+ 190:Core/Src/main.c **** 			msg[7]=Rxmsg[7];
+ 191:Core/Src/main.c **** 			if(msg[0]=='P'&&msg[1]=='b')
+ 192:Core/Src/main.c **** 				TogglePump(msg[2],msg[3]);
+ 193:Core/Src/main.c **** 			if(msg[0]=='V'&&msg[1]=='b')
+ 194:Core/Src/main.c **** 				ToggleValve(msg[2], msg[3]);
+ 195:Core/Src/main.c **** 		}
+ 196:Core/Src/main.c ****     /* USER CODE END WHILE */
+ 197:Core/Src/main.c **** 
+ 198:Core/Src/main.c ****     /* USER CODE BEGIN 3 */
+ 199:Core/Src/main.c **** 	}
+ 200:Core/Src/main.c ****   /* USER CODE END 3 */
+ 201:Core/Src/main.c **** }
+ 202:Core/Src/main.c **** 
+ 203:Core/Src/main.c **** /**
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 5
+
+
+ 204:Core/Src/main.c ****   * @brief System Clock Configuration
+ 205:Core/Src/main.c ****   * @retval None
+ 206:Core/Src/main.c ****   */
+ 207:Core/Src/main.c **** void SystemClock_Config(void)
+ 208:Core/Src/main.c **** {
+  27              		.loc 1 208 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 72
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31 0000 30B5     		push	{r4, r5, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 12
+  34              		.cfi_offset 4, -12
+  35              		.cfi_offset 5, -8
+  36              		.cfi_offset 14, -4
+  37 0002 93B0     		sub	sp, sp, #76
+  38              	.LCFI1:
+  39              		.cfi_def_cfa_offset 88
+ 209:Core/Src/main.c ****   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  40              		.loc 1 209 3 view .LVU1
+  41              		.loc 1 209 22 is_stmt 0 view .LVU2
+  42 0004 1C22     		movs	r2, #28
+  43 0006 0021     		movs	r1, #0
+  44 0008 07A8     		add	r0, sp, #28
+  45 000a FFF7FEFF 		bl	memset
+  46              	.LVL0:
+ 210:Core/Src/main.c ****   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  47              		.loc 1 210 3 is_stmt 1 view .LVU3
+  48              		.loc 1 210 22 is_stmt 0 view .LVU4
+  49 000e 1022     		movs	r2, #16
+  50 0010 0021     		movs	r1, #0
+  51 0012 01A8     		add	r0, sp, #4
+  52 0014 FFF7FEFF 		bl	memset
+  53              	.LVL1:
+ 211:Core/Src/main.c **** 
+ 212:Core/Src/main.c ****   /** Initializes the RCC Oscillators according to the specified parameters
+ 213:Core/Src/main.c ****   * in the RCC_OscInitTypeDef structure.
+ 214:Core/Src/main.c ****   */
+ 215:Core/Src/main.c ****   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  54              		.loc 1 215 3 is_stmt 1 view .LVU5
+  55              		.loc 1 215 36 is_stmt 0 view .LVU6
+  56 0018 0123     		movs	r3, #1
+  57 001a 0593     		str	r3, [sp, #20]
+ 216:Core/Src/main.c ****   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  58              		.loc 1 216 3 is_stmt 1 view .LVU7
+  59              		.loc 1 216 30 is_stmt 0 view .LVU8
+  60 001c 0693     		str	r3, [sp, #24]
+ 217:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  61              		.loc 1 217 3 is_stmt 1 view .LVU9
+  62              		.loc 1 217 34 is_stmt 0 view .LVU10
+  63 001e 0225     		movs	r5, #2
+  64 0020 0E95     		str	r5, [sp, #56]
+ 218:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  65              		.loc 1 218 3 is_stmt 1 view .LVU11
+  66              		.loc 1 218 35 is_stmt 0 view .LVU12
+  67 0022 8023     		movs	r3, #128
+  68 0024 5B02     		lsls	r3, r3, #9
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 6
+
+
+  69 0026 0F93     		str	r3, [sp, #60]
+ 219:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL6;
+  70              		.loc 1 219 3 is_stmt 1 view .LVU13
+  71              		.loc 1 219 32 is_stmt 0 view .LVU14
+  72 0028 8023     		movs	r3, #128
+  73 002a 5B03     		lsls	r3, r3, #13
+  74 002c 1093     		str	r3, [sp, #64]
+ 220:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PREDIV = RCC_PREDIV_DIV1;
+  75              		.loc 1 220 3 is_stmt 1 view .LVU15
+  76              		.loc 1 220 32 is_stmt 0 view .LVU16
+  77 002e 0024     		movs	r4, #0
+  78 0030 1194     		str	r4, [sp, #68]
+ 221:Core/Src/main.c ****   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  79              		.loc 1 221 3 is_stmt 1 view .LVU17
+  80              		.loc 1 221 7 is_stmt 0 view .LVU18
+  81 0032 05A8     		add	r0, sp, #20
+  82 0034 FFF7FEFF 		bl	HAL_RCC_OscConfig
+  83              	.LVL2:
+ 222:Core/Src/main.c ****   {
+ 223:Core/Src/main.c ****     Error_Handler();
+ 224:Core/Src/main.c ****   }
+ 225:Core/Src/main.c ****   /** Initializes the CPU, AHB and APB buses clocks
+ 226:Core/Src/main.c ****   */
+ 227:Core/Src/main.c ****   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+  84              		.loc 1 227 3 is_stmt 1 view .LVU19
+  85              		.loc 1 227 31 is_stmt 0 view .LVU20
+  86 0038 0723     		movs	r3, #7
+  87 003a 0193     		str	r3, [sp, #4]
+ 228:Core/Src/main.c ****                               |RCC_CLOCKTYPE_PCLK1;
+ 229:Core/Src/main.c ****   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  88              		.loc 1 229 3 is_stmt 1 view .LVU21
+  89              		.loc 1 229 34 is_stmt 0 view .LVU22
+  90 003c 0295     		str	r5, [sp, #8]
+ 230:Core/Src/main.c ****   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  91              		.loc 1 230 3 is_stmt 1 view .LVU23
+  92              		.loc 1 230 35 is_stmt 0 view .LVU24
+  93 003e 0394     		str	r4, [sp, #12]
+ 231:Core/Src/main.c ****   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  94              		.loc 1 231 3 is_stmt 1 view .LVU25
+  95              		.loc 1 231 36 is_stmt 0 view .LVU26
+  96 0040 0494     		str	r4, [sp, #16]
+ 232:Core/Src/main.c **** 
+ 233:Core/Src/main.c ****   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
+  97              		.loc 1 233 3 is_stmt 1 view .LVU27
+  98              		.loc 1 233 7 is_stmt 0 view .LVU28
+  99 0042 0121     		movs	r1, #1
+ 100 0044 01A8     		add	r0, sp, #4
+ 101 0046 FFF7FEFF 		bl	HAL_RCC_ClockConfig
+ 102              	.LVL3:
+ 234:Core/Src/main.c ****   {
+ 235:Core/Src/main.c ****     Error_Handler();
+ 236:Core/Src/main.c ****   }
+ 237:Core/Src/main.c **** }
+ 103              		.loc 1 237 1 view .LVU29
+ 104 004a 13B0     		add	sp, sp, #76
+ 105              		@ sp needed
+ 106 004c 30BD     		pop	{r4, r5, pc}
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 7
+
+
+ 107              		.cfi_endproc
+ 108              	.LFE41:
+ 110              		.section	.text.TogglePump,"ax",%progbits
+ 111              		.align	1
+ 112              		.global	TogglePump
+ 113              		.syntax unified
+ 114              		.code	16
+ 115              		.thumb_func
+ 116              		.fpu softvfp
+ 118              	TogglePump:
+ 119              	.LVL4:
+ 120              	.LFB42:
+ 238:Core/Src/main.c **** 
+ 239:Core/Src/main.c **** /* USER CODE BEGIN 4 */
+ 240:Core/Src/main.c **** void TogglePump(uint16_t pin, uint16_t state){
+ 121              		.loc 1 240 46 is_stmt 1 view -0
+ 122              		.cfi_startproc
+ 123              		@ args = 0, pretend = 0, frame = 0
+ 124              		@ frame_needed = 0, uses_anonymous_args = 0
+ 125              		.loc 1 240 46 is_stmt 0 view .LVU31
+ 126 0000 10B5     		push	{r4, lr}
+ 127              	.LCFI2:
+ 128              		.cfi_def_cfa_offset 8
+ 129              		.cfi_offset 4, -8
+ 130              		.cfi_offset 14, -4
+ 241:Core/Src/main.c **** 
+ 242:Core/Src/main.c **** 	switch(state){
+ 131              		.loc 1 242 2 is_stmt 1 view .LVU32
+ 132 0002 3029     		cmp	r1, #48
+ 133 0004 11D0     		beq	.L12
+ 134 0006 3129     		cmp	r1, #49
+ 135 0008 00D1     		bne	.L3
+ 243:Core/Src/main.c **** 	case '0':
+ 244:Core/Src/main.c **** 		state = GPIO_PIN_RESET;
+ 245:Core/Src/main.c **** 		break;
+ 246:Core/Src/main.c **** 	case '1':
+ 247:Core/Src/main.c **** 		state = GPIO_PIN_SET;
+ 136              		.loc 1 247 9 is_stmt 0 view .LVU33
+ 137 000a 3039     		subs	r1, r1, #48
+ 138              	.LVL5:
+ 139              	.L3:
+ 248:Core/Src/main.c **** 		break;
+ 249:Core/Src/main.c **** 	}
+ 250:Core/Src/main.c **** 	Txmsg[0]='R';
+ 140              		.loc 1 250 2 is_stmt 1 view .LVU34
+ 141              		.loc 1 250 10 is_stmt 0 view .LVU35
+ 142 000c 1B4B     		ldr	r3, .L13
+ 143 000e 5222     		movs	r2, #82
+ 144 0010 1A70     		strb	r2, [r3]
+ 251:Core/Src/main.c **** 	Txmsg[1]='p';
+ 145              		.loc 1 251 2 is_stmt 1 view .LVU36
+ 146              		.loc 1 251 10 is_stmt 0 view .LVU37
+ 147 0012 1E32     		adds	r2, r2, #30
+ 148 0014 5A70     		strb	r2, [r3, #1]
+ 252:Core/Src/main.c **** 	Txmsg[2]='b';
+ 149              		.loc 1 252 2 is_stmt 1 view .LVU38
+ 150              		.loc 1 252 10 is_stmt 0 view .LVU39
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 8
+
+
+ 151 0016 0E3A     		subs	r2, r2, #14
+ 152 0018 9A70     		strb	r2, [r3, #2]
+ 253:Core/Src/main.c **** 	switch (pin)
+ 153              		.loc 1 253 2 is_stmt 1 view .LVU40
+ 154 001a 3038     		subs	r0, r0, #48
+ 155              	.LVL6:
+ 156              		.loc 1 253 2 is_stmt 0 view .LVU41
+ 157 001c 83B2     		uxth	r3, r0
+ 158 001e 052B     		cmp	r3, #5
+ 159 0020 0BD8     		bhi	.L2
+ 160 0022 9800     		lsls	r0, r3, #2
+ 161 0024 164B     		ldr	r3, .L13+4
+ 162 0026 1B58     		ldr	r3, [r3, r0]
+ 163 0028 9F46     		mov	pc, r3
+ 164              		.section	.rodata.TogglePump,"a",%progbits
+ 165              		.align	2
+ 166              	.L6:
+ 167 0000 2E000000 		.word	.L11
+ 168 0004 3C000000 		.word	.L10
+ 169 0008 4A000000 		.word	.L9
+ 170 000c 58000000 		.word	.L8
+ 171 0010 64000000 		.word	.L7
+ 172 0014 70000000 		.word	.L5
+ 173              		.section	.text.TogglePump
+ 174              	.LVL7:
+ 175              	.L12:
+ 244:Core/Src/main.c **** 		break;
+ 176              		.loc 1 244 9 view .LVU42
+ 177 002a 0021     		movs	r1, #0
+ 178              	.LVL8:
+ 244:Core/Src/main.c **** 		break;
+ 179              		.loc 1 244 9 view .LVU43
+ 180 002c EEE7     		b	.L3
+ 181              	.LVL9:
+ 182              	.L11:
+ 254:Core/Src/main.c **** 	{
+ 255:Core/Src/main.c **** 	case '0':
+ 256:Core/Src/main.c **** 
+ 257:Core/Src/main.c **** 		HAL_GPIO_WritePin(P1_GPIO_Port, P1_Pin, state);
+ 183              		.loc 1 257 3 is_stmt 1 view .LVU44
+ 184 002e CAB2     		uxtb	r2, r1
+ 185 0030 9020     		movs	r0, #144
+ 186 0032 0821     		movs	r1, #8
+ 187              	.LVL10:
+ 188              		.loc 1 257 3 is_stmt 0 view .LVU45
+ 189 0034 C005     		lsls	r0, r0, #23
+ 190 0036 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 191              	.LVL11:
+ 258:Core/Src/main.c **** 		//HAL_Delay(250);
+ 259:Core/Src/main.c **** 
+ 260:Core/Src/main.c **** 		break;
+ 192              		.loc 1 260 3 is_stmt 1 view .LVU46
+ 193              	.L2:
+ 261:Core/Src/main.c **** 	case '1':
+ 262:Core/Src/main.c **** 
+ 263:Core/Src/main.c **** 		HAL_GPIO_WritePin(P2_GPIO_Port, P2_Pin, state);
+ 264:Core/Src/main.c **** 		//HAL_Delay(250);
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 9
+
+
+ 265:Core/Src/main.c **** 		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+ 266:Core/Src/main.c **** 		break;
+ 267:Core/Src/main.c **** 	case '2':
+ 268:Core/Src/main.c **** 
+ 269:Core/Src/main.c **** 		HAL_GPIO_WritePin(P3_GPIO_Port, P3_Pin, state);
+ 270:Core/Src/main.c **** 		//HAL_Delay(250);
+ 271:Core/Src/main.c **** 		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+ 272:Core/Src/main.c **** 		break;
+ 273:Core/Src/main.c **** 	case '3':
+ 274:Core/Src/main.c **** 
+ 275:Core/Src/main.c **** 		HAL_GPIO_WritePin(P4_GPIO_Port, P4_Pin, state);
+ 276:Core/Src/main.c **** 		//HAL_Delay(250);
+ 277:Core/Src/main.c **** 		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+ 278:Core/Src/main.c **** 		break;
+ 279:Core/Src/main.c **** 	case '4':
+ 280:Core/Src/main.c **** 
+ 281:Core/Src/main.c **** 		HAL_GPIO_WritePin(P5_GPIO_Port, P5_Pin, state);
+ 282:Core/Src/main.c **** 		//HAL_Delay(250);
+ 283:Core/Src/main.c **** 		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+ 284:Core/Src/main.c **** 		break;
+ 285:Core/Src/main.c **** 	case '5':
+ 286:Core/Src/main.c **** 
+ 287:Core/Src/main.c **** 		HAL_GPIO_WritePin(P6_GPIO_Port, P6_Pin, state);
+ 288:Core/Src/main.c **** 		//HAL_Delay(250);
+ 289:Core/Src/main.c **** 		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+ 290:Core/Src/main.c **** 		break;
+ 291:Core/Src/main.c **** 	}
+ 292:Core/Src/main.c **** 	//HAL_Delay(1000);
+ 293:Core/Src/main.c **** 	//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+ 294:Core/Src/main.c **** }
+ 194              		.loc 1 294 1 is_stmt 0 view .LVU47
+ 195              		@ sp needed
+ 196 003a 10BD     		pop	{r4, pc}
+ 197              	.LVL12:
+ 198              	.L10:
+ 263:Core/Src/main.c **** 		//HAL_Delay(250);
+ 199              		.loc 1 263 3 is_stmt 1 view .LVU48
+ 200 003c CAB2     		uxtb	r2, r1
+ 201 003e 9020     		movs	r0, #144
+ 202 0040 2021     		movs	r1, #32
+ 203              	.LVL13:
+ 263:Core/Src/main.c **** 		//HAL_Delay(250);
+ 204              		.loc 1 263 3 is_stmt 0 view .LVU49
+ 205 0042 C005     		lsls	r0, r0, #23
+ 206 0044 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 207              	.LVL14:
+ 266:Core/Src/main.c **** 	case '2':
+ 208              		.loc 1 266 3 is_stmt 1 view .LVU50
+ 209 0048 F7E7     		b	.L2
+ 210              	.LVL15:
+ 211              	.L9:
+ 269:Core/Src/main.c **** 		//HAL_Delay(250);
+ 212              		.loc 1 269 3 view .LVU51
+ 213 004a CAB2     		uxtb	r2, r1
+ 214 004c 9020     		movs	r0, #144
+ 215 004e 8021     		movs	r1, #128
+ 216              	.LVL16:
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 10
+
+
+ 269:Core/Src/main.c **** 		//HAL_Delay(250);
+ 217              		.loc 1 269 3 is_stmt 0 view .LVU52
+ 218 0050 C005     		lsls	r0, r0, #23
+ 219 0052 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 220              	.LVL17:
+ 272:Core/Src/main.c **** 	case '3':
+ 221              		.loc 1 272 3 is_stmt 1 view .LVU53
+ 222 0056 F0E7     		b	.L2
+ 223              	.LVL18:
+ 224              	.L8:
+ 275:Core/Src/main.c **** 		//HAL_Delay(250);
+ 225              		.loc 1 275 3 view .LVU54
+ 226 0058 CAB2     		uxtb	r2, r1
+ 227 005a 8021     		movs	r1, #128
+ 228              	.LVL19:
+ 275:Core/Src/main.c **** 		//HAL_Delay(250);
+ 229              		.loc 1 275 3 is_stmt 0 view .LVU55
+ 230 005c 0948     		ldr	r0, .L13+8
+ 231 005e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 232              	.LVL20:
+ 278:Core/Src/main.c **** 	case '4':
+ 233              		.loc 1 278 3 is_stmt 1 view .LVU56
+ 234 0062 EAE7     		b	.L2
+ 235              	.LVL21:
+ 236              	.L7:
+ 281:Core/Src/main.c **** 		//HAL_Delay(250);
+ 237              		.loc 1 281 3 view .LVU57
+ 238 0064 CAB2     		uxtb	r2, r1
+ 239 0066 2021     		movs	r1, #32
+ 240              	.LVL22:
+ 281:Core/Src/main.c **** 		//HAL_Delay(250);
+ 241              		.loc 1 281 3 is_stmt 0 view .LVU58
+ 242 0068 0648     		ldr	r0, .L13+8
+ 243 006a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 244              	.LVL23:
+ 284:Core/Src/main.c **** 	case '5':
+ 245              		.loc 1 284 3 is_stmt 1 view .LVU59
+ 246 006e E4E7     		b	.L2
+ 247              	.LVL24:
+ 248              	.L5:
+ 287:Core/Src/main.c **** 		//HAL_Delay(250);
+ 249              		.loc 1 287 3 view .LVU60
+ 250 0070 CAB2     		uxtb	r2, r1
+ 251 0072 0821     		movs	r1, #8
+ 252              	.LVL25:
+ 287:Core/Src/main.c **** 		//HAL_Delay(250);
+ 253              		.loc 1 287 3 is_stmt 0 view .LVU61
+ 254 0074 0348     		ldr	r0, .L13+8
+ 255 0076 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 256              	.LVL26:
+ 290:Core/Src/main.c **** 	}
+ 257              		.loc 1 290 3 is_stmt 1 view .LVU62
+ 258              		.loc 1 294 1 is_stmt 0 view .LVU63
+ 259 007a DEE7     		b	.L2
+ 260              	.L14:
+ 261              		.align	2
+ 262              	.L13:
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 11
+
+
+ 263 007c 00000000 		.word	Txmsg
+ 264 0080 00000000 		.word	.L6
+ 265 0084 00040048 		.word	1207960576
+ 266              		.cfi_endproc
+ 267              	.LFE42:
+ 269              		.section	.text.ToggleValve,"ax",%progbits
+ 270              		.align	1
+ 271              		.global	ToggleValve
+ 272              		.syntax unified
+ 273              		.code	16
+ 274              		.thumb_func
+ 275              		.fpu softvfp
+ 277              	ToggleValve:
+ 278              	.LVL27:
+ 279              	.LFB43:
+ 295:Core/Src/main.c **** 
+ 296:Core/Src/main.c **** void ToggleValve(uint16_t pin, uint16_t state){
+ 280              		.loc 1 296 47 is_stmt 1 view -0
+ 281              		.cfi_startproc
+ 282              		@ args = 0, pretend = 0, frame = 0
+ 283              		@ frame_needed = 0, uses_anonymous_args = 0
+ 284              		.loc 1 296 47 is_stmt 0 view .LVU65
+ 285 0000 10B5     		push	{r4, lr}
+ 286              	.LCFI3:
+ 287              		.cfi_def_cfa_offset 8
+ 288              		.cfi_offset 4, -8
+ 289              		.cfi_offset 14, -4
+ 297:Core/Src/main.c **** 
+ 298:Core/Src/main.c **** 	switch(state){
+ 290              		.loc 1 298 2 is_stmt 1 view .LVU66
+ 291 0002 3029     		cmp	r1, #48
+ 292 0004 0AD0     		beq	.L25
+ 293 0006 3129     		cmp	r1, #49
+ 294 0008 00D1     		bne	.L16
+ 299:Core/Src/main.c **** 	case '0':
+ 300:Core/Src/main.c **** 		state = GPIO_PIN_RESET;
+ 301:Core/Src/main.c **** 		break;
+ 302:Core/Src/main.c **** 	case '1':
+ 303:Core/Src/main.c **** 		state = GPIO_PIN_SET;
+ 295              		.loc 1 303 9 is_stmt 0 view .LVU67
+ 296 000a 3039     		subs	r1, r1, #48
+ 297              	.LVL28:
+ 298              	.L16:
+ 304:Core/Src/main.c **** 		break;
+ 305:Core/Src/main.c **** 	}
+ 306:Core/Src/main.c **** 
+ 307:Core/Src/main.c **** 	switch (pin)
+ 299              		.loc 1 307 2 is_stmt 1 view .LVU68
+ 300 000c 3038     		subs	r0, r0, #48
+ 301              	.LVL29:
+ 302              		.loc 1 307 2 is_stmt 0 view .LVU69
+ 303 000e 83B2     		uxth	r3, r0
+ 304 0010 052B     		cmp	r3, #5
+ 305 0012 0BD8     		bhi	.L15
+ 306 0014 9800     		lsls	r0, r3, #2
+ 307 0016 184B     		ldr	r3, .L26
+ 308 0018 1B58     		ldr	r3, [r3, r0]
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 12
+
+
+ 309 001a 9F46     		mov	pc, r3
+ 310              		.section	.rodata.ToggleValve,"a",%progbits
+ 311              		.align	2
+ 312              	.L19:
+ 313 0000 20000000 		.word	.L24
+ 314 0004 2E000000 		.word	.L23
+ 315 0008 3C000000 		.word	.L22
+ 316 000c 48000000 		.word	.L21
+ 317 0010 54000000 		.word	.L20
+ 318 0014 66000000 		.word	.L18
+ 319              		.section	.text.ToggleValve
+ 320              	.LVL30:
+ 321              	.L25:
+ 300:Core/Src/main.c **** 		break;
+ 322              		.loc 1 300 9 view .LVU70
+ 323 001c 0021     		movs	r1, #0
+ 324              	.LVL31:
+ 300:Core/Src/main.c **** 		break;
+ 325              		.loc 1 300 9 view .LVU71
+ 326 001e F5E7     		b	.L16
+ 327              	.LVL32:
+ 328              	.L24:
+ 308:Core/Src/main.c **** 	{
+ 309:Core/Src/main.c **** 	case '0':
+ 310:Core/Src/main.c **** 		HAL_GPIO_WritePin(V1_GPIO_Port, V1_Pin, state);
+ 329              		.loc 1 310 3 is_stmt 1 view .LVU72
+ 330 0020 CAB2     		uxtb	r2, r1
+ 331 0022 9020     		movs	r0, #144
+ 332 0024 1021     		movs	r1, #16
+ 333              	.LVL33:
+ 334              		.loc 1 310 3 is_stmt 0 view .LVU73
+ 335 0026 C005     		lsls	r0, r0, #23
+ 336 0028 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 337              	.LVL34:
+ 311:Core/Src/main.c **** 		//HAL_Delay(250);
+ 312:Core/Src/main.c **** 		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+ 313:Core/Src/main.c **** 		break;
+ 338              		.loc 1 313 3 is_stmt 1 view .LVU74
+ 339              	.L15:
+ 314:Core/Src/main.c **** 	case '1':
+ 315:Core/Src/main.c **** 
+ 316:Core/Src/main.c **** 		HAL_GPIO_WritePin(V2_GPIO_Port, V2_Pin, state);
+ 317:Core/Src/main.c **** 		//HAL_Delay(250);
+ 318:Core/Src/main.c **** 		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+ 319:Core/Src/main.c **** 		break;
+ 320:Core/Src/main.c **** 	case '2':
+ 321:Core/Src/main.c **** 
+ 322:Core/Src/main.c **** 		HAL_GPIO_WritePin(V3_GPIO_Port, V3_Pin, state);
+ 323:Core/Src/main.c **** 		//HAL_Delay(250);
+ 324:Core/Src/main.c **** 		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+ 325:Core/Src/main.c **** 		break;
+ 326:Core/Src/main.c **** 	case '3':
+ 327:Core/Src/main.c **** 
+ 328:Core/Src/main.c **** 		HAL_GPIO_WritePin(V4_GPIO_Port, V4_Pin, state);
+ 329:Core/Src/main.c **** 		//HAL_Delay(250);
+ 330:Core/Src/main.c **** 		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+ 331:Core/Src/main.c **** 		break;
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 13
+
+
+ 332:Core/Src/main.c **** 	case '4':
+ 333:Core/Src/main.c **** 
+ 334:Core/Src/main.c **** 		HAL_GPIO_WritePin(V5_GPIO_Port, V5_Pin, state);
+ 335:Core/Src/main.c **** 		HAL_Delay(250);
+ 336:Core/Src/main.c **** 		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+ 337:Core/Src/main.c **** 		break;
+ 338:Core/Src/main.c **** 	case '5':
+ 339:Core/Src/main.c **** 
+ 340:Core/Src/main.c **** 		HAL_GPIO_WritePin(V6_GPIO_Port, V6_Pin, state);
+ 341:Core/Src/main.c **** 		//HAL_Delay(250);
+ 342:Core/Src/main.c **** 		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+ 343:Core/Src/main.c **** 		break;
+ 344:Core/Src/main.c **** 
+ 345:Core/Src/main.c **** 	}
+ 346:Core/Src/main.c **** 	//HAL_Delay(1000);
+ 347:Core/Src/main.c **** 	//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+ 348:Core/Src/main.c **** }
+ 340              		.loc 1 348 1 is_stmt 0 view .LVU75
+ 341              		@ sp needed
+ 342 002c 10BD     		pop	{r4, pc}
+ 343              	.LVL35:
+ 344              	.L23:
+ 316:Core/Src/main.c **** 		//HAL_Delay(250);
+ 345              		.loc 1 316 3 is_stmt 1 view .LVU76
+ 346 002e CAB2     		uxtb	r2, r1
+ 347 0030 9020     		movs	r0, #144
+ 348 0032 4021     		movs	r1, #64
+ 349              	.LVL36:
+ 316:Core/Src/main.c **** 		//HAL_Delay(250);
+ 350              		.loc 1 316 3 is_stmt 0 view .LVU77
+ 351 0034 C005     		lsls	r0, r0, #23
+ 352 0036 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 353              	.LVL37:
+ 319:Core/Src/main.c **** 	case '2':
+ 354              		.loc 1 319 3 is_stmt 1 view .LVU78
+ 355 003a F7E7     		b	.L15
+ 356              	.LVL38:
+ 357              	.L22:
+ 322:Core/Src/main.c **** 		//HAL_Delay(250);
+ 358              		.loc 1 322 3 view .LVU79
+ 359 003c CAB2     		uxtb	r2, r1
+ 360 003e 0121     		movs	r1, #1
+ 361              	.LVL39:
+ 322:Core/Src/main.c **** 		//HAL_Delay(250);
+ 362              		.loc 1 322 3 is_stmt 0 view .LVU80
+ 363 0040 0E48     		ldr	r0, .L26+4
+ 364 0042 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 365              	.LVL40:
+ 325:Core/Src/main.c **** 	case '3':
+ 366              		.loc 1 325 3 is_stmt 1 view .LVU81
+ 367 0046 F1E7     		b	.L15
+ 368              	.LVL41:
+ 369              	.L21:
+ 328:Core/Src/main.c **** 		//HAL_Delay(250);
+ 370              		.loc 1 328 3 view .LVU82
+ 371 0048 CAB2     		uxtb	r2, r1
+ 372 004a 4021     		movs	r1, #64
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 14
+
+
+ 373              	.LVL42:
+ 328:Core/Src/main.c **** 		//HAL_Delay(250);
+ 374              		.loc 1 328 3 is_stmt 0 view .LVU83
+ 375 004c 0B48     		ldr	r0, .L26+4
+ 376 004e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 377              	.LVL43:
+ 331:Core/Src/main.c **** 	case '4':
+ 378              		.loc 1 331 3 is_stmt 1 view .LVU84
+ 379 0052 EBE7     		b	.L15
+ 380              	.LVL44:
+ 381              	.L20:
+ 334:Core/Src/main.c **** 		HAL_Delay(250);
+ 382              		.loc 1 334 3 view .LVU85
+ 383 0054 CAB2     		uxtb	r2, r1
+ 384 0056 1021     		movs	r1, #16
+ 385              	.LVL45:
+ 334:Core/Src/main.c **** 		HAL_Delay(250);
+ 386              		.loc 1 334 3 is_stmt 0 view .LVU86
+ 387 0058 0848     		ldr	r0, .L26+4
+ 388 005a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 389              	.LVL46:
+ 335:Core/Src/main.c **** 		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+ 390              		.loc 1 335 3 is_stmt 1 view .LVU87
+ 391 005e FA20     		movs	r0, #250
+ 392 0060 FFF7FEFF 		bl	HAL_Delay
+ 393              	.LVL47:
+ 337:Core/Src/main.c **** 	case '5':
+ 394              		.loc 1 337 3 view .LVU88
+ 395 0064 E2E7     		b	.L15
+ 396              	.LVL48:
+ 397              	.L18:
+ 340:Core/Src/main.c **** 		//HAL_Delay(250);
+ 398              		.loc 1 340 3 view .LVU89
+ 399 0066 CAB2     		uxtb	r2, r1
+ 400 0068 8021     		movs	r1, #128
+ 401              	.LVL49:
+ 340:Core/Src/main.c **** 		//HAL_Delay(250);
+ 402              		.loc 1 340 3 is_stmt 0 view .LVU90
+ 403 006a 9020     		movs	r0, #144
+ 404 006c 0902     		lsls	r1, r1, #8
+ 405 006e C005     		lsls	r0, r0, #23
+ 406 0070 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 407              	.LVL50:
+ 343:Core/Src/main.c **** 
+ 408              		.loc 1 343 3 is_stmt 1 view .LVU91
+ 409              		.loc 1 348 1 is_stmt 0 view .LVU92
+ 410 0074 DAE7     		b	.L15
+ 411              	.L27:
+ 412 0076 C046     		.align	2
+ 413              	.L26:
+ 414 0078 00000000 		.word	.L19
+ 415 007c 00040048 		.word	1207960576
+ 416              		.cfi_endproc
+ 417              	.LFE43:
+ 419              		.section	.text.main,"ax",%progbits
+ 420              		.align	1
+ 421              		.global	main
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 15
+
+
+ 422              		.syntax unified
+ 423              		.code	16
+ 424              		.thumb_func
+ 425              		.fpu softvfp
+ 427              	main:
+ 428              	.LFB40:
+  75:Core/Src/main.c ****   /* USER CODE BEGIN 1 */
+ 429              		.loc 1 75 1 is_stmt 1 view -0
+ 430              		.cfi_startproc
+ 431              		@ Volatile: function does not return.
+ 432              		@ args = 0, pretend = 0, frame = 0
+ 433              		@ frame_needed = 0, uses_anonymous_args = 0
+ 434 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 435              	.LCFI4:
+ 436              		.cfi_def_cfa_offset 24
+ 437              		.cfi_offset 3, -24
+ 438              		.cfi_offset 4, -20
+ 439              		.cfi_offset 5, -16
+ 440              		.cfi_offset 6, -12
+ 441              		.cfi_offset 7, -8
+ 442              		.cfi_offset 14, -4
+  83:Core/Src/main.c **** 
+ 443              		.loc 1 83 3 view .LVU94
+ 444 0002 FFF7FEFF 		bl	HAL_Init
+ 445              	.LVL51:
+  90:Core/Src/main.c **** 
+ 446              		.loc 1 90 3 view .LVU95
+ 447 0006 FFF7FEFF 		bl	SystemClock_Config
+ 448              	.LVL52:
+  97:Core/Src/main.c ****   MX_CAN_Init();
+ 449              		.loc 1 97 3 view .LVU96
+ 450 000a FFF7FEFF 		bl	MX_GPIO_Init
+ 451              	.LVL53:
+  98:Core/Src/main.c ****   /* USER CODE BEGIN 2 */
+ 452              		.loc 1 98 3 view .LVU97
+ 453 000e FFF7FEFF 		bl	MX_CAN_Init
+ 454              	.LVL54:
+ 455 0012 0CE0     		b	.L32
+ 456              	.L37:
+ 457              	.LBB2:
+ 174:Core/Src/main.c **** 				TogglePump(msg[2],msg[3]);
+ 458              		.loc 1 174 18 is_stmt 0 discriminator 1 view .LVU98
+ 459 0014 622E     		cmp	r6, #98
+ 460 0016 1DD1     		bne	.L30
+ 175:Core/Src/main.c **** 			if(msg[0]=='V'&&msg[1]=='b')
+ 461              		.loc 1 175 5 is_stmt 1 view .LVU99
+ 462 0018 A1B2     		uxth	r1, r4
+ 463 001a B8B2     		uxth	r0, r7
+ 464 001c FFF7FEFF 		bl	TogglePump
+ 465              	.LVL55:
+ 466 0020 18E0     		b	.L30
+ 467              	.L29:
+ 468              	.LBE2:
+ 179:Core/Src/main.c **** 		{
+ 469              		.loc 1 179 3 view .LVU100
+ 179:Core/Src/main.c **** 		{
+ 470              		.loc 1 179 6 is_stmt 0 view .LVU101
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 16
+
+
+ 471 0022 0121     		movs	r1, #1
+ 472 0024 1E48     		ldr	r0, .L39
+ 473 0026 FFF7FEFF 		bl	HAL_CAN_GetRxFifoFillLevel
+ 474              	.LVL56:
+ 179:Core/Src/main.c **** 		{
+ 475              		.loc 1 179 5 view .LVU102
+ 476 002a 0028     		cmp	r0, #0
+ 477 002c 1BD1     		bne	.L36
+ 478              	.L32:
+ 105:Core/Src/main.c **** 	{
+ 479              		.loc 1 105 2 is_stmt 1 view .LVU103
+ 162:Core/Src/main.c **** 		{
+ 480              		.loc 1 162 3 view .LVU104
+ 162:Core/Src/main.c **** 		{
+ 481              		.loc 1 162 6 is_stmt 0 view .LVU105
+ 482 002e 0021     		movs	r1, #0
+ 483 0030 1B48     		ldr	r0, .L39
+ 484 0032 FFF7FEFF 		bl	HAL_CAN_GetRxFifoFillLevel
+ 485              	.LVL57:
+ 162:Core/Src/main.c **** 		{
+ 486              		.loc 1 162 5 view .LVU106
+ 487 0036 0028     		cmp	r0, #0
+ 488 0038 F3D0     		beq	.L29
+ 489              	.LBB3:
+ 164:Core/Src/main.c **** 			uint8_t msg[8];
+ 490              		.loc 1 164 4 is_stmt 1 view .LVU107
+ 491 003a 1A4C     		ldr	r4, .L39+4
+ 492 003c 2300     		movs	r3, r4
+ 493 003e 1A4A     		ldr	r2, .L39+8
+ 494 0040 0021     		movs	r1, #0
+ 495 0042 1748     		ldr	r0, .L39
+ 496 0044 FFF7FEFF 		bl	HAL_CAN_GetRxMessage
+ 497              	.LVL58:
+ 165:Core/Src/main.c **** 			msg[0]=Rxmsg[0];
+ 498              		.loc 1 165 4 view .LVU108
+ 166:Core/Src/main.c **** 			msg[1]=Rxmsg[1];
+ 499              		.loc 1 166 4 view .LVU109
+ 166:Core/Src/main.c **** 			msg[1]=Rxmsg[1];
+ 500              		.loc 1 166 16 is_stmt 0 view .LVU110
+ 501 0048 2578     		ldrb	r5, [r4]
+ 167:Core/Src/main.c **** 			msg[2]=Rxmsg[2];
+ 502              		.loc 1 167 4 is_stmt 1 view .LVU111
+ 167:Core/Src/main.c **** 			msg[2]=Rxmsg[2];
+ 503              		.loc 1 167 16 is_stmt 0 view .LVU112
+ 504 004a 6678     		ldrb	r6, [r4, #1]
+ 168:Core/Src/main.c **** 			msg[3]=Rxmsg[3];
+ 505              		.loc 1 168 4 is_stmt 1 view .LVU113
+ 168:Core/Src/main.c **** 			msg[3]=Rxmsg[3];
+ 506              		.loc 1 168 16 is_stmt 0 view .LVU114
+ 507 004c A778     		ldrb	r7, [r4, #2]
+ 169:Core/Src/main.c **** 			msg[4]=Rxmsg[4];
+ 508              		.loc 1 169 4 is_stmt 1 view .LVU115
+ 169:Core/Src/main.c **** 			msg[4]=Rxmsg[4];
+ 509              		.loc 1 169 16 is_stmt 0 view .LVU116
+ 510 004e E478     		ldrb	r4, [r4, #3]
+ 170:Core/Src/main.c **** 			msg[5]=Rxmsg[5];
+ 511              		.loc 1 170 4 is_stmt 1 view .LVU117
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 17
+
+
+ 171:Core/Src/main.c **** 			msg[6]=Rxmsg[6];
+ 512              		.loc 1 171 4 view .LVU118
+ 172:Core/Src/main.c **** 			msg[7]=Rxmsg[7];
+ 513              		.loc 1 172 4 view .LVU119
+ 173:Core/Src/main.c **** 			if(msg[0]=='P'&&msg[1]=='b')
+ 514              		.loc 1 173 4 view .LVU120
+ 174:Core/Src/main.c **** 				TogglePump(msg[2],msg[3]);
+ 515              		.loc 1 174 4 view .LVU121
+ 174:Core/Src/main.c **** 				TogglePump(msg[2],msg[3]);
+ 516              		.loc 1 174 6 is_stmt 0 view .LVU122
+ 517 0050 502D     		cmp	r5, #80
+ 518 0052 DFD0     		beq	.L37
+ 519              	.L30:
+ 176:Core/Src/main.c **** 				ToggleValve(msg[2], msg[3]);
+ 520              		.loc 1 176 4 is_stmt 1 view .LVU123
+ 176:Core/Src/main.c **** 				ToggleValve(msg[2], msg[3]);
+ 521              		.loc 1 176 6 is_stmt 0 view .LVU124
+ 522 0054 562D     		cmp	r5, #86
+ 523 0056 E4D1     		bne	.L29
+ 176:Core/Src/main.c **** 				ToggleValve(msg[2], msg[3]);
+ 524              		.loc 1 176 18 discriminator 1 view .LVU125
+ 525 0058 622E     		cmp	r6, #98
+ 526 005a E2D1     		bne	.L29
+ 177:Core/Src/main.c **** 		}
+ 527              		.loc 1 177 5 is_stmt 1 view .LVU126
+ 528 005c A1B2     		uxth	r1, r4
+ 529 005e B8B2     		uxth	r0, r7
+ 530 0060 FFF7FEFF 		bl	ToggleValve
+ 531              	.LVL59:
+ 532 0064 DDE7     		b	.L29
+ 533              	.L36:
+ 534              	.LBE3:
+ 535              	.LBB4:
+ 181:Core/Src/main.c **** 			uint8_t msg[8];
+ 536              		.loc 1 181 4 view .LVU127
+ 537 0066 0F4C     		ldr	r4, .L39+4
+ 538 0068 2300     		movs	r3, r4
+ 539 006a 0F4A     		ldr	r2, .L39+8
+ 540 006c 0121     		movs	r1, #1
+ 541 006e 0C48     		ldr	r0, .L39
+ 542 0070 FFF7FEFF 		bl	HAL_CAN_GetRxMessage
+ 543              	.LVL60:
+ 182:Core/Src/main.c **** 			msg[0]=Rxmsg[0];
+ 544              		.loc 1 182 4 view .LVU128
+ 183:Core/Src/main.c **** 			msg[1]=Rxmsg[1];
+ 545              		.loc 1 183 4 view .LVU129
+ 183:Core/Src/main.c **** 			msg[1]=Rxmsg[1];
+ 546              		.loc 1 183 16 is_stmt 0 view .LVU130
+ 547 0074 2578     		ldrb	r5, [r4]
+ 184:Core/Src/main.c **** 			msg[2]=Rxmsg[2];
+ 548              		.loc 1 184 4 is_stmt 1 view .LVU131
+ 184:Core/Src/main.c **** 			msg[2]=Rxmsg[2];
+ 549              		.loc 1 184 16 is_stmt 0 view .LVU132
+ 550 0076 6678     		ldrb	r6, [r4, #1]
+ 185:Core/Src/main.c **** 			msg[3]=Rxmsg[3];
+ 551              		.loc 1 185 4 is_stmt 1 view .LVU133
+ 185:Core/Src/main.c **** 			msg[3]=Rxmsg[3];
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 18
+
+
+ 552              		.loc 1 185 16 is_stmt 0 view .LVU134
+ 553 0078 A778     		ldrb	r7, [r4, #2]
+ 186:Core/Src/main.c **** 			msg[4]=Rxmsg[4];
+ 554              		.loc 1 186 4 is_stmt 1 view .LVU135
+ 186:Core/Src/main.c **** 			msg[4]=Rxmsg[4];
+ 555              		.loc 1 186 16 is_stmt 0 view .LVU136
+ 556 007a E478     		ldrb	r4, [r4, #3]
+ 187:Core/Src/main.c **** 			msg[5]=Rxmsg[5];
+ 557              		.loc 1 187 4 is_stmt 1 view .LVU137
+ 188:Core/Src/main.c **** 			msg[6]=Rxmsg[6];
+ 558              		.loc 1 188 4 view .LVU138
+ 189:Core/Src/main.c **** 			msg[7]=Rxmsg[7];
+ 559              		.loc 1 189 4 view .LVU139
+ 190:Core/Src/main.c **** 			if(msg[0]=='P'&&msg[1]=='b')
+ 560              		.loc 1 190 4 view .LVU140
+ 191:Core/Src/main.c **** 				TogglePump(msg[2],msg[3]);
+ 561              		.loc 1 191 4 view .LVU141
+ 191:Core/Src/main.c **** 				TogglePump(msg[2],msg[3]);
+ 562              		.loc 1 191 6 is_stmt 0 view .LVU142
+ 563 007c 502D     		cmp	r5, #80
+ 564 007e 08D0     		beq	.L38
+ 565              	.L33:
+ 193:Core/Src/main.c **** 				ToggleValve(msg[2], msg[3]);
+ 566              		.loc 1 193 4 is_stmt 1 view .LVU143
+ 193:Core/Src/main.c **** 				ToggleValve(msg[2], msg[3]);
+ 567              		.loc 1 193 6 is_stmt 0 view .LVU144
+ 568 0080 562D     		cmp	r5, #86
+ 569 0082 D4D1     		bne	.L32
+ 193:Core/Src/main.c **** 				ToggleValve(msg[2], msg[3]);
+ 570              		.loc 1 193 18 discriminator 1 view .LVU145
+ 571 0084 622E     		cmp	r6, #98
+ 572 0086 D2D1     		bne	.L32
+ 194:Core/Src/main.c **** 		}
+ 573              		.loc 1 194 5 is_stmt 1 view .LVU146
+ 574 0088 A1B2     		uxth	r1, r4
+ 575 008a B8B2     		uxth	r0, r7
+ 576 008c FFF7FEFF 		bl	ToggleValve
+ 577              	.LVL61:
+ 578 0090 CDE7     		b	.L32
+ 579              	.L38:
+ 191:Core/Src/main.c **** 				TogglePump(msg[2],msg[3]);
+ 580              		.loc 1 191 18 is_stmt 0 discriminator 1 view .LVU147
+ 581 0092 622E     		cmp	r6, #98
+ 582 0094 F4D1     		bne	.L33
+ 192:Core/Src/main.c **** 			if(msg[0]=='V'&&msg[1]=='b')
+ 583              		.loc 1 192 5 is_stmt 1 view .LVU148
+ 584 0096 A1B2     		uxth	r1, r4
+ 585 0098 B8B2     		uxth	r0, r7
+ 586 009a FFF7FEFF 		bl	TogglePump
+ 587              	.LVL62:
+ 588 009e EFE7     		b	.L33
+ 589              	.L40:
+ 590              		.align	2
+ 591              	.L39:
+ 592 00a0 00000000 		.word	hcan
+ 593 00a4 00000000 		.word	Rxmsg
+ 594 00a8 00000000 		.word	Rxheader
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 19
+
+
+ 595              	.LBE4:
+ 596              		.cfi_endproc
+ 597              	.LFE40:
+ 599              		.section	.text.HAL_CAN_RxFifo1MsgPendingCallback,"ax",%progbits
+ 600              		.align	1
+ 601              		.global	HAL_CAN_RxFifo1MsgPendingCallback
+ 602              		.syntax unified
+ 603              		.code	16
+ 604              		.thumb_func
+ 605              		.fpu softvfp
+ 607              	HAL_CAN_RxFifo1MsgPendingCallback:
+ 608              	.LVL63:
+ 609              	.LFB44:
+ 349:Core/Src/main.c **** void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan){
+ 610              		.loc 1 349 64 view -0
+ 611              		.cfi_startproc
+ 612              		@ args = 0, pretend = 0, frame = 0
+ 613              		@ frame_needed = 0, uses_anonymous_args = 0
+ 614              		.loc 1 349 64 is_stmt 0 view .LVU150
+ 615 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 616              	.LCFI5:
+ 617              		.cfi_def_cfa_offset 24
+ 618              		.cfi_offset 3, -24
+ 619              		.cfi_offset 4, -20
+ 620              		.cfi_offset 5, -16
+ 621              		.cfi_offset 6, -12
+ 622              		.cfi_offset 7, -8
+ 623              		.cfi_offset 14, -4
+ 350:Core/Src/main.c **** 	HAL_CAN_GetRxMessage(hcan, CAN_FILTER_FIFO1, &Rxheader,Rxmsg);
+ 624              		.loc 1 350 2 is_stmt 1 view .LVU151
+ 625 0002 0E4C     		ldr	r4, .L46
+ 626 0004 2300     		movs	r3, r4
+ 627 0006 0E4A     		ldr	r2, .L46+4
+ 628 0008 0121     		movs	r1, #1
+ 629 000a FFF7FEFF 		bl	HAL_CAN_GetRxMessage
+ 630              	.LVL64:
+ 351:Core/Src/main.c **** 	uint8_t msg[8];
+ 631              		.loc 1 351 2 view .LVU152
+ 352:Core/Src/main.c **** 	msg[0]=Rxmsg[0];
+ 632              		.loc 1 352 2 view .LVU153
+ 633              		.loc 1 352 14 is_stmt 0 view .LVU154
+ 634 000e 2578     		ldrb	r5, [r4]
+ 353:Core/Src/main.c **** 	msg[1]=Rxmsg[1];
+ 635              		.loc 1 353 2 is_stmt 1 view .LVU155
+ 636              		.loc 1 353 14 is_stmt 0 view .LVU156
+ 637 0010 6678     		ldrb	r6, [r4, #1]
+ 354:Core/Src/main.c **** 	msg[2]=Rxmsg[2];
+ 638              		.loc 1 354 2 is_stmt 1 view .LVU157
+ 639              		.loc 1 354 14 is_stmt 0 view .LVU158
+ 640 0012 A778     		ldrb	r7, [r4, #2]
+ 355:Core/Src/main.c **** 	msg[3]=Rxmsg[3];
+ 641              		.loc 1 355 2 is_stmt 1 view .LVU159
+ 642              		.loc 1 355 14 is_stmt 0 view .LVU160
+ 643 0014 E478     		ldrb	r4, [r4, #3]
+ 356:Core/Src/main.c **** 	msg[4]=Rxmsg[4];
+ 644              		.loc 1 356 2 is_stmt 1 view .LVU161
+ 357:Core/Src/main.c **** 	msg[5]=Rxmsg[5];
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 20
+
+
+ 645              		.loc 1 357 2 view .LVU162
+ 358:Core/Src/main.c **** 	msg[6]=Rxmsg[6];
+ 646              		.loc 1 358 2 view .LVU163
+ 359:Core/Src/main.c **** 	msg[7]=Rxmsg[7];
+ 647              		.loc 1 359 2 view .LVU164
+ 360:Core/Src/main.c **** 	if(msg[0]=='P'&&msg[1]=='b')
+ 648              		.loc 1 360 2 view .LVU165
+ 649              		.loc 1 360 4 is_stmt 0 view .LVU166
+ 650 0016 502D     		cmp	r5, #80
+ 651 0018 02D0     		beq	.L44
+ 652              	.L42:
+ 361:Core/Src/main.c **** 		TogglePump(msg[2],msg[3]);
+ 362:Core/Src/main.c **** 	if(msg[0]=='V'&&msg[1]=='b')
+ 653              		.loc 1 362 2 is_stmt 1 view .LVU167
+ 654              		.loc 1 362 4 is_stmt 0 view .LVU168
+ 655 001a 562D     		cmp	r5, #86
+ 656 001c 07D0     		beq	.L45
+ 657              	.L41:
+ 363:Core/Src/main.c **** 		ToggleValve(msg[2], msg[3]);
+ 364:Core/Src/main.c **** 
+ 365:Core/Src/main.c **** }
+ 658              		.loc 1 365 1 view .LVU169
+ 659              		@ sp needed
+ 660 001e F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 661              	.L44:
+ 360:Core/Src/main.c **** 		TogglePump(msg[2],msg[3]);
+ 662              		.loc 1 360 16 discriminator 1 view .LVU170
+ 663 0020 622E     		cmp	r6, #98
+ 664 0022 FAD1     		bne	.L42
+ 361:Core/Src/main.c **** 		TogglePump(msg[2],msg[3]);
+ 665              		.loc 1 361 3 is_stmt 1 view .LVU171
+ 666 0024 A1B2     		uxth	r1, r4
+ 667 0026 B8B2     		uxth	r0, r7
+ 668 0028 FFF7FEFF 		bl	TogglePump
+ 669              	.LVL65:
+ 670 002c F5E7     		b	.L42
+ 671              	.L45:
+ 362:Core/Src/main.c **** 		ToggleValve(msg[2], msg[3]);
+ 672              		.loc 1 362 16 is_stmt 0 discriminator 1 view .LVU172
+ 673 002e 622E     		cmp	r6, #98
+ 674 0030 F5D1     		bne	.L41
+ 363:Core/Src/main.c **** 		ToggleValve(msg[2], msg[3]);
+ 675              		.loc 1 363 3 is_stmt 1 view .LVU173
+ 676 0032 A1B2     		uxth	r1, r4
+ 677 0034 B8B2     		uxth	r0, r7
+ 678 0036 FFF7FEFF 		bl	ToggleValve
+ 679              	.LVL66:
+ 680              		.loc 1 365 1 is_stmt 0 view .LVU174
+ 681 003a F0E7     		b	.L41
+ 682              	.L47:
+ 683              		.align	2
+ 684              	.L46:
+ 685 003c 00000000 		.word	Rxmsg
+ 686 0040 00000000 		.word	Rxheader
+ 687              		.cfi_endproc
+ 688              	.LFE44:
+ 690              		.section	.text.HAL_CAN_RxFifo0MsgPendingCallback,"ax",%progbits
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 21
+
+
+ 691              		.align	1
+ 692              		.global	HAL_CAN_RxFifo0MsgPendingCallback
+ 693              		.syntax unified
+ 694              		.code	16
+ 695              		.thumb_func
+ 696              		.fpu softvfp
+ 698              	HAL_CAN_RxFifo0MsgPendingCallback:
+ 699              	.LVL67:
+ 700              	.LFB45:
+ 366:Core/Src/main.c **** void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan){
+ 701              		.loc 1 366 64 is_stmt 1 view -0
+ 702              		.cfi_startproc
+ 703              		@ args = 0, pretend = 0, frame = 0
+ 704              		@ frame_needed = 0, uses_anonymous_args = 0
+ 705              		.loc 1 366 64 is_stmt 0 view .LVU176
+ 706 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 707              	.LCFI6:
+ 708              		.cfi_def_cfa_offset 24
+ 709              		.cfi_offset 3, -24
+ 710              		.cfi_offset 4, -20
+ 711              		.cfi_offset 5, -16
+ 712              		.cfi_offset 6, -12
+ 713              		.cfi_offset 7, -8
+ 714              		.cfi_offset 14, -4
+ 367:Core/Src/main.c **** 	HAL_CAN_GetRxMessage(hcan, CAN_FILTER_FIFO0, &Rxheader,Rxmsg);
+ 715              		.loc 1 367 2 is_stmt 1 view .LVU177
+ 716 0002 0E4C     		ldr	r4, .L53
+ 717 0004 2300     		movs	r3, r4
+ 718 0006 0E4A     		ldr	r2, .L53+4
+ 719 0008 0021     		movs	r1, #0
+ 720 000a FFF7FEFF 		bl	HAL_CAN_GetRxMessage
+ 721              	.LVL68:
+ 368:Core/Src/main.c **** 	uint8_t msg[8];
+ 722              		.loc 1 368 2 view .LVU178
+ 369:Core/Src/main.c **** 	msg[0]=Rxmsg[0];
+ 723              		.loc 1 369 2 view .LVU179
+ 724              		.loc 1 369 14 is_stmt 0 view .LVU180
+ 725 000e 2578     		ldrb	r5, [r4]
+ 370:Core/Src/main.c **** 	msg[1]=Rxmsg[1];
+ 726              		.loc 1 370 2 is_stmt 1 view .LVU181
+ 727              		.loc 1 370 14 is_stmt 0 view .LVU182
+ 728 0010 6678     		ldrb	r6, [r4, #1]
+ 371:Core/Src/main.c **** 	msg[2]=Rxmsg[2];
+ 729              		.loc 1 371 2 is_stmt 1 view .LVU183
+ 730              		.loc 1 371 14 is_stmt 0 view .LVU184
+ 731 0012 A778     		ldrb	r7, [r4, #2]
+ 372:Core/Src/main.c **** 	msg[3]=Rxmsg[3];
+ 732              		.loc 1 372 2 is_stmt 1 view .LVU185
+ 733              		.loc 1 372 14 is_stmt 0 view .LVU186
+ 734 0014 E478     		ldrb	r4, [r4, #3]
+ 373:Core/Src/main.c **** 	msg[4]=Rxmsg[4];
+ 735              		.loc 1 373 2 is_stmt 1 view .LVU187
+ 374:Core/Src/main.c **** 	msg[5]=Rxmsg[5];
+ 736              		.loc 1 374 2 view .LVU188
+ 375:Core/Src/main.c **** 	msg[6]=Rxmsg[6];
+ 737              		.loc 1 375 2 view .LVU189
+ 376:Core/Src/main.c **** 	msg[7]=Rxmsg[7];
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 22
+
+
+ 738              		.loc 1 376 2 view .LVU190
+ 377:Core/Src/main.c **** 	if(msg[0]=='P'&&msg[1]=='b')
+ 739              		.loc 1 377 2 view .LVU191
+ 740              		.loc 1 377 4 is_stmt 0 view .LVU192
+ 741 0016 502D     		cmp	r5, #80
+ 742 0018 02D0     		beq	.L51
+ 743              	.L49:
+ 378:Core/Src/main.c **** 		TogglePump(msg[2],msg[3]);
+ 379:Core/Src/main.c **** 	if(msg[0]=='V'&&msg[1]=='b')
+ 744              		.loc 1 379 2 is_stmt 1 view .LVU193
+ 745              		.loc 1 379 4 is_stmt 0 view .LVU194
+ 746 001a 562D     		cmp	r5, #86
+ 747 001c 07D0     		beq	.L52
+ 748              	.L48:
+ 380:Core/Src/main.c **** 		ToggleValve(msg[2], msg[3]);
+ 381:Core/Src/main.c **** 
+ 382:Core/Src/main.c **** }
+ 749              		.loc 1 382 1 view .LVU195
+ 750              		@ sp needed
+ 751 001e F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 752              	.L51:
+ 377:Core/Src/main.c **** 		TogglePump(msg[2],msg[3]);
+ 753              		.loc 1 377 16 discriminator 1 view .LVU196
+ 754 0020 622E     		cmp	r6, #98
+ 755 0022 FAD1     		bne	.L49
+ 378:Core/Src/main.c **** 		TogglePump(msg[2],msg[3]);
+ 756              		.loc 1 378 3 is_stmt 1 view .LVU197
+ 757 0024 A1B2     		uxth	r1, r4
+ 758 0026 B8B2     		uxth	r0, r7
+ 759 0028 FFF7FEFF 		bl	TogglePump
+ 760              	.LVL69:
+ 761 002c F5E7     		b	.L49
+ 762              	.L52:
+ 379:Core/Src/main.c **** 		ToggleValve(msg[2], msg[3]);
+ 763              		.loc 1 379 16 is_stmt 0 discriminator 1 view .LVU198
+ 764 002e 622E     		cmp	r6, #98
+ 765 0030 F5D1     		bne	.L48
+ 380:Core/Src/main.c **** 		ToggleValve(msg[2], msg[3]);
+ 766              		.loc 1 380 3 is_stmt 1 view .LVU199
+ 767 0032 A1B2     		uxth	r1, r4
+ 768 0034 B8B2     		uxth	r0, r7
+ 769 0036 FFF7FEFF 		bl	ToggleValve
+ 770              	.LVL70:
+ 771              		.loc 1 382 1 is_stmt 0 view .LVU200
+ 772 003a F0E7     		b	.L48
+ 773              	.L54:
+ 774              		.align	2
+ 775              	.L53:
+ 776 003c 00000000 		.word	Rxmsg
+ 777 0040 00000000 		.word	Rxheader
+ 778              		.cfi_endproc
+ 779              	.LFE45:
+ 781              		.section	.text.Error_Handler,"ax",%progbits
+ 782              		.align	1
+ 783              		.global	Error_Handler
+ 784              		.syntax unified
+ 785              		.code	16
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 23
+
+
+ 786              		.thumb_func
+ 787              		.fpu softvfp
+ 789              	Error_Handler:
+ 790              	.LFB46:
+ 383:Core/Src/main.c **** 
+ 384:Core/Src/main.c **** /* USER CODE END 4 */
+ 385:Core/Src/main.c **** 
+ 386:Core/Src/main.c **** /**
+ 387:Core/Src/main.c ****   * @brief  This function is executed in case of error occurrence.
+ 388:Core/Src/main.c ****   * @retval None
+ 389:Core/Src/main.c ****   */
+ 390:Core/Src/main.c **** void Error_Handler(void)
+ 391:Core/Src/main.c **** {
+ 791              		.loc 1 391 1 is_stmt 1 view -0
+ 792              		.cfi_startproc
+ 793              		@ args = 0, pretend = 0, frame = 0
+ 794              		@ frame_needed = 0, uses_anonymous_args = 0
+ 795              		@ link register save eliminated.
+ 392:Core/Src/main.c ****   /* USER CODE BEGIN Error_Handler_Debug */
+ 393:Core/Src/main.c **** 	/* User can add his own implementation to report the HAL error return state */
+ 394:Core/Src/main.c **** 
+ 395:Core/Src/main.c ****   /* USER CODE END Error_Handler_Debug */
+ 396:Core/Src/main.c **** }
+ 796              		.loc 1 396 1 view .LVU202
+ 797              		@ sp needed
+ 798 0000 7047     		bx	lr
+ 799              		.cfi_endproc
+ 800              	.LFE46:
+ 802              		.comm	filter,40,4
+ 803              		.comm	msg,8,4
+ 804              		.comm	Txmsg,8,4
+ 805              		.comm	Rxmsg,8,4
+ 806              		.comm	Txmailbox,4,4
+ 807              		.comm	Rxheader,28,4
+ 808              		.comm	Txheader,24,4
+ 809              		.text
+ 810              	.Letext0:
+ 811              		.file 2 "c:\\users\\pierre-anthony\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc
+ 812              		.file 3 "c:\\users\\pierre-anthony\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc
+ 813              		.file 4 "Drivers/CMSIS/Device/ST/STM32F0xx/Include/system_stm32f0xx.h"
+ 814              		.file 5 "Drivers/CMSIS/Device/ST/STM32F0xx/Include/stm32f042x6.h"
+ 815              		.file 6 "Drivers/CMSIS/Device/ST/STM32F0xx/Include/stm32f0xx.h"
+ 816              		.file 7 "Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_def.h"
+ 817              		.file 8 "Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_rcc.h"
+ 818              		.file 9 "Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_gpio.h"
+ 819              		.file 10 "Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_can.h"
+ 820              		.file 11 "Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal.h"
+ 821              		.file 12 "Core/Inc/can.h"
+ 822              		.file 13 "Core/Inc/gpio.h"
+ 823              		.file 14 "<built-in>"
+ARM GAS  C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s 			page 24
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:16     .text.SystemClock_Config:0000000000000000 $t
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:24     .text.SystemClock_Config:0000000000000000 SystemClock_Config
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:111    .text.TogglePump:0000000000000000 $t
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:118    .text.TogglePump:0000000000000000 TogglePump
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:165    .rodata.TogglePump:0000000000000000 $d
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:263    .text.TogglePump:000000000000007c $d
+                            *COM*:0000000000000008 Txmsg
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:270    .text.ToggleValve:0000000000000000 $t
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:277    .text.ToggleValve:0000000000000000 ToggleValve
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:311    .rodata.ToggleValve:0000000000000000 $d
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:414    .text.ToggleValve:0000000000000078 $d
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:420    .text.main:0000000000000000 $t
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:427    .text.main:0000000000000000 main
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:592    .text.main:00000000000000a0 $d
+                            *COM*:0000000000000008 Rxmsg
+                            *COM*:000000000000001c Rxheader
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:600    .text.HAL_CAN_RxFifo1MsgPendingCallback:0000000000000000 $t
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:607    .text.HAL_CAN_RxFifo1MsgPendingCallback:0000000000000000 HAL_CAN_RxFifo1MsgPendingCallback
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:685    .text.HAL_CAN_RxFifo1MsgPendingCallback:000000000000003c $d
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:691    .text.HAL_CAN_RxFifo0MsgPendingCallback:0000000000000000 $t
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:698    .text.HAL_CAN_RxFifo0MsgPendingCallback:0000000000000000 HAL_CAN_RxFifo0MsgPendingCallback
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:776    .text.HAL_CAN_RxFifo0MsgPendingCallback:000000000000003c $d
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:782    .text.Error_Handler:0000000000000000 $t
+C:\Users\PIERRE~1\AppData\Local\Temp\cc9N2lmF.s:789    .text.Error_Handler:0000000000000000 Error_Handler
+                            *COM*:0000000000000028 filter
+                            *COM*:0000000000000008 msg
+                            *COM*:0000000000000004 Txmailbox
+                            *COM*:0000000000000018 Txheader
+
+UNDEFINED SYMBOLS
+memset
+HAL_RCC_OscConfig
+HAL_RCC_ClockConfig
+HAL_GPIO_WritePin
+HAL_Delay
+HAL_Init
+MX_GPIO_Init
+MX_CAN_Init
+HAL_CAN_GetRxFifoFillLevel
+HAL_CAN_GetRxMessage
+hcan

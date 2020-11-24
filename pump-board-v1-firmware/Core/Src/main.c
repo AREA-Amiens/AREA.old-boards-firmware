@@ -2,7 +2,7 @@
 /**
  ******************************************************************************
  * @file           : main.c
- * @brief          : Main program body
+ * @brief          : Firmware for the pump board v1 (v2 tbr)
  ******************************************************************************
  * @attention
  *
@@ -104,95 +104,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	while (1)
 	{
-		/*TogglePump('0', '1');
-		HAL_Delay(100);
-		TogglePump('0', '0');
-		HAL_Delay(100);
-		ToggleValve('0', '1');
-		HAL_Delay(100);
-		ToggleValve('0', '0');
-		HAL_Delay(100);
-
-
-
-		TogglePump('1', '1');
-		HAL_Delay(100);
-		TogglePump('1', '0');
-		HAL_Delay(100);
-		ToggleValve('1', '1');
-		HAL_Delay(100);
-		ToggleValve('1', '0');
-		HAL_Delay(100);
-
-
-
-		TogglePump('2', '1');
-		HAL_Delay(100);
-		TogglePump('2', '0');
-		HAL_Delay(100);
-		ToggleValve('2', '1');
-		HAL_Delay(100);
-		ToggleValve('2', '0');
-		HAL_Delay(100);
-
-
-
-
-		TogglePump('3', '1');
-		HAL_Delay(100);
-		TogglePump('3', '0');
-		HAL_Delay(100);
-		ToggleValve('3', '1');
-		HAL_Delay(100);
-		ToggleValve('3', '0');
-		HAL_Delay(100);
-
-
-
-
-		TogglePump('4', '1');
-		HAL_Delay(100);
-		TogglePump('4', '0');
-		HAL_Delay(100);
-		ToggleValve('4', '1');
-		HAL_Delay(100);
-		ToggleValve('4', '0');
-		HAL_Delay(100);*/
-
-		if(HAL_CAN_GetRxFifoFillLevel(&hcan,CAN_RX_FIFO0))
-		{
-			HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0,&Rxheader, Rxmsg);
-			uint8_t msg[8];
-			msg[0]=Rxmsg[0];
-			msg[1]=Rxmsg[1];
-			msg[2]=Rxmsg[2];
-			msg[3]=Rxmsg[3];
-			msg[4]=Rxmsg[4];
-			msg[5]=Rxmsg[5];
-			msg[6]=Rxmsg[6];
-			msg[7]=Rxmsg[7];
-			if(msg[0]=='P'&&msg[1]=='b')
-				TogglePump(msg[2],msg[3]);
-			if(msg[0]=='V'&&msg[1]=='b')
-				ToggleValve(msg[2], msg[3]);
-		}
-		if(HAL_CAN_GetRxFifoFillLevel(&hcan,CAN_RX_FIFO1))
-		{
-			HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO1,&Rxheader, Rxmsg);
-			uint8_t msg[8];
-			msg[0]=Rxmsg[0];
-			msg[1]=Rxmsg[1];
-			msg[2]=Rxmsg[2];
-			msg[3]=Rxmsg[3];
-			msg[4]=Rxmsg[4];
-			msg[5]=Rxmsg[5];
-			msg[6]=Rxmsg[6];
-			msg[7]=Rxmsg[7];
-			if(msg[0]=='P'&&msg[1]=='b')
-				TogglePump(msg[2],msg[3]);
-			if(msg[0]=='V'&&msg[1]=='b')
-				ToggleValve(msg[2], msg[3]);
-		}
+	//Waiting for interruption on the Canbus
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -255,42 +167,41 @@ void TogglePump(uint16_t pin, uint16_t state){
 	case '0':
 
 		HAL_GPIO_WritePin(P1_GPIO_Port, P1_Pin, state);
-		//HAL_Delay(250);
+		HAL_Delay(250);
 
 		break;
 	case '1':
 
 		HAL_GPIO_WritePin(P2_GPIO_Port, P2_Pin, state);
-		//HAL_Delay(250);
-		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+		HAL_Delay(250);
+		HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
 		break;
 	case '2':
 
 		HAL_GPIO_WritePin(P3_GPIO_Port, P3_Pin, state);
-		//HAL_Delay(250);
-		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+		HAL_Delay(250);
+		HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
 		break;
 	case '3':
 
 		HAL_GPIO_WritePin(P4_GPIO_Port, P4_Pin, state);
-		//HAL_Delay(250);
-		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+		HAL_Delay(250);
+		HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
 		break;
 	case '4':
 
 		HAL_GPIO_WritePin(P5_GPIO_Port, P5_Pin, state);
-		//HAL_Delay(250);
-		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+		HAL_Delay(250);
+		HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
 		break;
 	case '5':
 
 		HAL_GPIO_WritePin(P6_GPIO_Port, P6_Pin, state);
-		//HAL_Delay(250);
-		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+		HAL_Delay(250);
+		HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
 		break;
 	}
-	//HAL_Delay(1000);
-	//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+	
 }
 
 void ToggleValve(uint16_t pin, uint16_t state){
@@ -308,43 +219,42 @@ void ToggleValve(uint16_t pin, uint16_t state){
 	{
 	case '0':
 		HAL_GPIO_WritePin(V1_GPIO_Port, V1_Pin, state);
-		//HAL_Delay(250);
-		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+		HAL_Delay(250);
+		HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
 		break;
 	case '1':
 
 		HAL_GPIO_WritePin(V2_GPIO_Port, V2_Pin, state);
-		//HAL_Delay(250);
-		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+		HAL_Delay(250);
+		HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
 		break;
 	case '2':
 
 		HAL_GPIO_WritePin(V3_GPIO_Port, V3_Pin, state);
-		//HAL_Delay(250);
-		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+		HAL_Delay(250);
+		HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
 		break;
 	case '3':
 
 		HAL_GPIO_WritePin(V4_GPIO_Port, V4_Pin, state);
-		//HAL_Delay(250);
-		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+		HAL_Delay(250);
+		HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
 		break;
 	case '4':
 
 		HAL_GPIO_WritePin(V5_GPIO_Port, V5_Pin, state);
 		HAL_Delay(250);
-		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+		HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
 		break;
 	case '5':
 
 		HAL_GPIO_WritePin(V6_GPIO_Port, V6_Pin, state);
-		//HAL_Delay(250);
-		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+		HAL_Delay(250);
+		HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
 		break;
 
 	}
-	//HAL_Delay(1000);
-	//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+	
 }
 void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan){
 	HAL_CAN_GetRxMessage(hcan, CAN_FILTER_FIFO1, &Rxheader,Rxmsg);
