@@ -56,6 +56,7 @@ CAN_FilterTypeDef filter;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
+void conf_filter(void);
 void TogglePump(uint16_t pin,uint16_t state);
 void ToggleValve(uint16_t pin,uint16_t state);
 void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan);
@@ -97,7 +98,7 @@ int main(void)
   MX_GPIO_Init();
   MX_CAN_Init();
   /* USER CODE BEGIN 2 */
-
+  conf_filter();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -291,6 +292,24 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan){
 
 }
 
+void conf_filter(void){
+	filter.FilterIdHigh=0x400;
+	filter.FilterFIFOAssignment=CAN_FILTER_FIFO0|CAN_FILTER_FIFO1;
+	filter.FilterMode=CAN_FILTERMODE_IDMASK;
+	filter.FilterScale=CAN_FILTERSCALE_32BIT;
+	filter.FilterBank=0;
+	filter.SlaveStartFilterBank=14;
+	filter.FilterActivation=CAN_FILTER_ENABLE;
+
+	Txheader.StdId = 0x500;      // Détermine l'adresse du périphérique au quel la trame est destiné.
+	// Si plusieurs périphériques sur le bus comprennent cette adresse dans leur filtre, ils recevront tous la trame.
+	Txheader.ExtId = 0x0;       // Adresse étendue, non utilisée dans note cas
+	Txheader.RTR = CAN_RTR_DATA; // Précise que la trame contient des données
+	Txheader.IDE = CAN_ID_STD;   // Précise que la trame est de type Standard
+	Txheader.DLC = 5;            // Précise le nombre d'octets de données que la trame transporte ( De 0 à 8 )
+	Txheader.TransmitGlobalTime = DISABLE;
+
+}
 /* USER CODE END 4 */
 
 /**
