@@ -92,7 +92,7 @@
 				"-f",
 				"c:/Users/Pierre-Anthony/.vscode/extensions/buzzyelectronics.stm-helper-1.2.9/OpenOCD/scripts/target/stm32f0x.cfg",
 				"-c",
-				"program build/pump-board-v1-firmware.elf",
+				"program build/Untitled (Workspace).elf",
 				"-c init",
 				"-c reset",
 				"-c exit"

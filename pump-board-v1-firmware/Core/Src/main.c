@@ -50,6 +50,7 @@ uint32_t Txmailbox;
 uint8_t Rxmsg[8];
 uint8_t Txmsg[8];
 uint8_t msg[8];
+uint8_t tstmsg[4]={0x1,0x2,0x3,0x4};
 CAN_FilterTypeDef filter;
 /* USER CODE END PV */
 
@@ -97,8 +98,10 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_CAN_Init();
+  
   /* USER CODE BEGIN 2 */
   conf_filter();
+  //HAL_CAN_AddTxMessage(&hcan,&Txheader,tstmsg,&Txmailbox);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -107,7 +110,40 @@ int main(void)
 	{
 	//Waiting for interruption on the Canbus
     /* USER CODE END WHILE */
+	//HAL_CAN_AddTxMessage(&hcan,&Txheader,tstmsg,&Txmailbox);
+// 	HAL_CAN_GetRxMessage(&hcan, CAN_FILTER_FIFO1, &Rxheader,Rxmsg);
+// 	uint8_t msg[8];
+// 	msg[0]=Rxmsg[0];
+// 	msg[1]=Rxmsg[1];
+// 	msg[2]=Rxmsg[2];
+// 	msg[3]=Rxmsg[3];
+// 	msg[4]=Rxmsg[4];
+// 	msg[5]=Rxmsg[5];
+// 	msg[6]=Rxmsg[6];
+// 	msg[7]=Rxmsg[7];
+// 	if(msg[0]=='P'&&msg[1]=='b')
+// 		TogglePump(msg[2],msg[3]);
+// 	if(msg[0]=='V'&&msg[1]=='b')
+// 		ToggleValve(msg[2], msg[3]);
+// HAL_CAN_GetRxMessage(&hcan, CAN_FILTER_FIFO0, &Rxheader,Rxmsg);
+// 	//uint8_t msg[8];
+// 	msg[0]=Rxmsg[0];
+// 	msg[1]=Rxmsg[1];
+// 	msg[2]=Rxmsg[2];
+// 	msg[3]=Rxmsg[3];
+// 	msg[4]=Rxmsg[4];
+// 	msg[5]=Rxmsg[5];
+// 	msg[6]=Rxmsg[6];
+// 	msg[7]=Rxmsg[7];
+// 	if(msg[0]=='P'&&msg[1]=='b')
+// 		TogglePump(msg[2],msg[3]);
+// 	if(msg[0]=='V'&&msg[1]=='b')
+// 		ToggleValve(msg[2], msg[3]);
 
+ToggleValve('0','1');
+HAL_Delay(1000);
+ToggleValve('0','0');
+HAL_CAN_AddTxMessage(&hcan,&Txheader, tstmsg, &Txmailbox);
     /* USER CODE BEGIN 3 */
 	}
   /* USER CODE END 3 */
@@ -169,13 +205,13 @@ void TogglePump(uint16_t pin, uint16_t state){
 
 		HAL_GPIO_WritePin(P1_GPIO_Port, P1_Pin, state);
 		HAL_Delay(250);
-
+		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
 		break;
 	case '1':
 
 		HAL_GPIO_WritePin(P2_GPIO_Port, P2_Pin, state);
 		HAL_Delay(250);
-		HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
+		//HAL_CAN_AddTxMessage(&hcan,&Txheader, Txmsg, &Txmailbox);
 		break;
 	case '2':
 
@@ -268,6 +304,7 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan){
 	msg[5]=Rxmsg[5];
 	msg[6]=Rxmsg[6];
 	msg[7]=Rxmsg[7];
+	TogglePump('0','1');
 	if(msg[0]=='P'&&msg[1]=='b')
 		TogglePump(msg[2],msg[3]);
 	if(msg[0]=='V'&&msg[1]=='b')
@@ -285,6 +322,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan){
 	msg[5]=Rxmsg[5];
 	msg[6]=Rxmsg[6];
 	msg[7]=Rxmsg[7];
+	TogglePump('0','1');
 	if(msg[0]=='P'&&msg[1]=='b')
 		TogglePump(msg[2],msg[3]);
 	if(msg[0]=='V'&&msg[1]=='b')
@@ -293,8 +331,10 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan){
 }
 
 void conf_filter(void){
+	//HAL_CAN_MspInit(&hcan);
+
 	filter.FilterIdHigh=0x400;
-	filter.FilterFIFOAssignment=CAN_FILTER_FIFO0|CAN_FILTER_FIFO1;
+	filter.FilterFIFOAssignment=CAN_FILTER_FIFO0||CAN_FILTER_FIFO1;
 	filter.FilterMode=CAN_FILTERMODE_IDMASK;
 	filter.FilterScale=CAN_FILTERSCALE_32BIT;
 	filter.FilterBank=0;
@@ -306,9 +346,9 @@ void conf_filter(void){
 	Txheader.ExtId = 0x0;       // Adresse étendue, non utilisée dans note cas
 	Txheader.RTR = CAN_RTR_DATA; // Précise que la trame contient des données
 	Txheader.IDE = CAN_ID_STD;   // Précise que la trame est de type Standard
-	Txheader.DLC = 5;            // Précise le nombre d'octets de données que la trame transporte ( De 0 à 8 )
+	Txheader.DLC =3;            // Précise le nombre d'octets de données que la trame transporte ( De 0 à 8 )
 	Txheader.TransmitGlobalTime = DISABLE;
-
+	HAL_CAN_ConfigFilter(&hcan,&filter);
 }
 /* USER CODE END 4 */
 
