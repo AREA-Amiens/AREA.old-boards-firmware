@@ -51,7 +51,7 @@ if(!SPIFFS.begin())
   {
     request->send(SPIFFS, "/script.js", "text/javascript");
   });
-
+  server.begin();
 }
 
 
