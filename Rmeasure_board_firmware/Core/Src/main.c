@@ -98,7 +98,11 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
-
+  for(uint8_t i=0;i==10;i++){
+  HAL_GPIO_TogglePin(LED_GPIO_Port,LED_Pin);
+  HAL_Delay(300);
+  }
+  
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -106,7 +110,7 @@ int main(void)
   while (1)
   {
     HAL_GPIO_TogglePin(LED_GPIO_Port,LED_Pin);
-    HAL_Delay(1000);
+    HAL_Delay(500);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
